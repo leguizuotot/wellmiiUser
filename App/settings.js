@@ -7,7 +7,7 @@ module.exports = ({
 //******************************************************
 
 app: {
-	name: 'M1nsa1t',
+	name: 'Wellmii',
 	hostname: 'www.losbrezos.xyz',
 	colors: {
 		corporate: '#209779',

@@ -7,7 +7,9 @@ import {
   WebView,
   ScrollView,
   TextInput,
-  TouchableHighlight
+  TouchableHighlight,
+  AsyncStorage,
+  Alert
 } from 'react-native';
 
 import settings from '../settings'
@@ -20,11 +22,26 @@ const contextTypes = {
   drawer: PropTypes.object,
 };
 
+
+
 class Home extends Component {
+    
+
+
     constructor(props) {
         super(props);
         this.state = {
+
         };
+    }
+/*
+
+parse
+*/
+    componentDidMount () {
+   
+       
+
     }
 
     render(){
@@ -35,20 +52,17 @@ class Home extends Component {
 
         return (
             <View  style={[styles.containerScene]}>
-                <NavBar title={settings.app.name} backButton={true} drawer={true}/>
+                <NavBar title={settings.app.name} backButton={false} drawer={true}/>
                 <View style={[styles.containerMain]}>
                     <View style={[styles.containerDown, {flex:1}]}>
                         <Text> Estas en Home ONE!!!!!!</Text>
-                        <TouchableHighlight onPress={drawer.toggle}>
+                        <TouchableHighlight onPress={gotoHome1}>
                             <Text> Booommm Home1*!!!! </Text>
                         </TouchableHighlight>
                         <TouchableHighlight onPress={gotoHome2}>
                             <Text> Booommm Home2*!!!! </Text>
                         </TouchableHighlight>
-                        <TouchableHighlight onPress={gotoHome2} style={{flex:1}}>
-                            <Text> Booommm Ho242342342!!!! </Text>
-                        </TouchableHighlight>
-
+                       
                     </View>  
                 </View>
             </View>

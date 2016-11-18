@@ -7,7 +7,8 @@ import {
   WebView,
   ScrollView,
   TextInput,
-  TouchableHighlight
+  TouchableHighlight,
+  Alert
 } from 'react-native';
 
 import NavBar from './Widgets/NavBar';
@@ -27,11 +28,9 @@ var hostname = settings.app.hostname;
 var pathname = settings.socialLogin.pathnameGoogle;
 
 /* logros pendientes
-
 como detectar si la ruta esta caida
 como detectar que al ruta no se encuentra
 como detectar que la ruta no es lo esperado
-
 */
 
 
@@ -63,23 +62,35 @@ onNavigationStateChange (navState) {
             CookieManager.get(hostname, (err, cookie) => {
           
                 if (cookie && cookie.authGoogle) {
+                  
                     User.loginGoogle('', cookie.authGoogle, hostname)
                     .then((responseRAW) => responseRAW.json())
+                    // #####!!!!"""!$$$%· HAY QUE COMPROBAR QUE EL RESPONSE SEA 200!! SI NO DEBE AVISAR DEL ERROR Y VOLVER AL LOGIN PRINCIPAL
                     .then((response) => {
+                       
                         this.setState({
                             cookieValue: cookie.authGoogle,
                             webview: url.hostname + '' + url.pathname + ' Success: ya estas en /callback y la cookie esta!!! :) El fetch salió de rechupete.',
-                            response: JSON.stringify(response, null,2)
+                            response: response
                         });
                     })
                     .then(() => {
                         CookieManager.clearAll((err, res) => {});
                     })
                     .then(() => {
+
+                        Alert.alert('Fetched data', JSON.stringify(this.state.response, null, 2), [
+                            //{text: 'Cancel', onPress: () => console.log('Cancel Pressed!')},
+                            {text: 'OK', onPress: () => console.log('OK Pressed!')}
+                        ])
                         Actions.SideDrawer();
                     })
                     .catch((error) => {
                         // lo mismo, en caso de error si no consigue la cookie.... habra que avisar de q hay problemas y no se puede logar. el problema seria el back
+                        Alert.alert('unexpected error', JSON.stringify(this.state.response, null,2), [
+                            //{text: 'Cancel', onPress: () => console.log('Cancel Pressed!')},
+                            {text: 'OK', onPress: () => console.log('OK Pressed!')}
+                        ])
                         this.setState({
                             cookieValue: cookie.authGoogle,
                             webview: url.hostname + '' + url.pathname + ' Success: ya estas en /callback y la cookie esta!!! :) Error en el fetch',

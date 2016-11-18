@@ -10,7 +10,8 @@ import {
   TouchableHighlight,
   Navigator,
   Image,
-  Alert
+  Alert,
+  AsyncStorage
 } from 'react-native';
 
 import {Router, Route, Scene, Actions, Schema} from 'react-native-router-flux';
@@ -22,7 +23,13 @@ import styles from '../styles';
 import user from '../Services/user';
 
 
+var store;
+
 class Login extends Component {
+
+    componentWillMount () {
+
+    }
 
     constructor(props) {
         super(props);
@@ -30,6 +37,10 @@ class Login extends Component {
             inputEmail: '',
             inputPassword: ''
         };
+    };
+
+    componentDidMount () {
+
     };
 
     _registerUser() {
@@ -45,23 +56,48 @@ class Login extends Component {
         user.loginLocal(this.state.inputEmail, this.state.inputPassword)
             .then((responseRAW) => responseRAW.json())
             .then((response) => {
-                var fd = response;
-                
+                var fd = response;               
                 if(fd.status == 200){
-
                     if(fd.user){
-                        Alert.alert('Fetched data', JSON.stringify(fd, null, 2), [
-                        //{text: 'Cancel', onPress: () => console.log('Cancel Pressed!')},
-                        {text: 'OK', onPress: () => console.log('OK Pressed!')}
-                    ])
-                        Actions.SideDrawer();
+                        
+                        if(AsyncStorage.getItem('storedUser')) {
+                            AsyncStorage.getItem('storedUser')  
+                                .then((value) => {
+                                    store = JSON.parse(value); //convierte el JSON en un objeto
+                                    Alert.alert('ya existia la clave', 'que hago entonces? \n'
+                                                + store.profile[0].isActive
+                                                + '\n'
+                                                + JSON.stringify(store, null, 2), [
+                                        {text: 'OK', onPress: () => console.log('OK Pressed!')}
+                                    ])
+                                })
+
+
+                        }else {
+                            AsyncStorage.setItem('storedUser', JSON.stringify(fd.user))
+                                .then(() => {
+                                    /*
+                                    Alert.alert('AsyncStorage stored OK', JSON.stringify(fd.user), [
+                                        {text: 'OK', onPress: () => console.log('OK Pressed!')}
+                                    ])
+                                    */
+                                })
+                                .then(() => {
+                                    Actions.SideDrawer()  
+                                })
+                                .catch((error) => {
+                                    Alert.alert('AsyncStorage error :(', JSON.stringify(error, null, 2), [
+                                        {text: 'OK', onPress: () => console.log('OK Pressed!')}
+                                    ])
+                                })
+
+                       }          
                     }
                     else{
                         Alert.alert('Unexpected data received :(', JSON.stringify(fd, null, 2), [
                             {text: 'OK', onPress: () => console.log('OK Pressed!')}
                         ])
                     }
-                    
                 }
                 else{
                     var errDescription = '';
@@ -127,7 +163,7 @@ class Login extends Component {
                                     </View>
                                 </TouchableHighlight>
 
-                                <View style={[styles.containerRight, {justifyContent: 'space-between'}]}>
+                                <View style={[styles.containerRight, {justifyContent: 'space-between', padding: 2}]}>
                                     <TouchableHighlight onPress={this._registerUser.bind(this)}>
                                         <Text>Create a new account</Text>
                                     </TouchableHighlight>
@@ -160,7 +196,7 @@ class Login extends Component {
                                             <View style={{backgroundColor: settings.socialLogin.colorGoogle1, height: 40, width: 50, alignItems: 'center', justifyContent: 'center'}} >
                                                 <Image
                                                     style={{width: 30, height: 30}}
-                                                    source={{uri: 'https://'+settings.app.hostname+'/imgs/social/googlePlusWhite.png'}}
+                                                    source={{uri: 'https://'+ settings.app.hostname +'/imgs/social/googlePlusWhite.png'}}
                                                 />
                                             </View>
                                             <View style={{backgroundColor: settings.socialLogin.colorGoogle1, height: 40, flex: 1, alignItems: 'center', justifyContent: 'flex-start', flexDirection: 'row'}} >
@@ -175,7 +211,7 @@ class Login extends Component {
                                             <View style={{backgroundColor: settings.socialLogin.colorTwitter1, height: 40, width: 50, alignItems: 'center', justifyContent: 'center'}} >
                                                 <Image
                                                     style={{width: 30, height: 30}}
-                                                    source={{uri: 'https://'+settings.app.hostname+'/imgs/social/twitterWhite.png'}}
+                                                    source={{uri: 'https://'+ settings.app.hostname +'/imgs/social/twitterWhite.png'}}
                                                 />
                                             </View>
                                             <View style={{backgroundColor: settings.socialLogin.colorTwitter1, height: 40, flex: 1, alignItems: 'center', justifyContent: 'flex-start', flexDirection: 'row'}} >
