@@ -16,31 +16,25 @@ import settings from '../settings'
 import styles from '../styles'
 import NavBar from './Widgets/NavBar'
 
+import userService from '../Services/userService'
+import userStorage from '../Controllers/userStorage'
+
 import {Router, Scene, Actions, Schema} from 'react-native-router-flux';
 
 const contextTypes = {
   drawer: PropTypes.object,
 };
 
-
-
 class Home extends Component {
     
-
-
     constructor(props) {
         super(props);
         this.state = {
-
+          storedUser: null
         };
     }
-/*
 
-parse
-*/
     componentDidMount () {
-   
-       
 
     }
 
@@ -62,7 +56,7 @@ parse
                         <TouchableHighlight onPress={gotoHome2}>
                             <Text> Booommm Home2*!!!! </Text>
                         </TouchableHighlight>
-                       
+
                     </View>  
                 </View>
             </View>

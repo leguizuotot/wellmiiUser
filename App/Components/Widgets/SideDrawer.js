@@ -13,6 +13,7 @@ class SideDrawer extends Component {
  
     render(){
         const state = this.props.navigationState;
+        var user = this.props.user;
         const children = state.children;
         return (
             <Drawer

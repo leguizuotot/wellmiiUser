@@ -20,10 +20,9 @@ import NavBar from './Widgets/NavBar';
 import settings from '../settings';
 import styles from '../styles';
 
-import user from '../Services/user';
+import userStorage from '../Controllers/userStorage';
+import userService from '../Services/userService';
 
-
-var store;
 
 class Login extends Component {
 
@@ -34,13 +33,37 @@ class Login extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            loaded: false,
             inputEmail: '',
             inputPassword: ''
         };
     };
 
     componentDidMount () {
-
+        userStorage.getUserChecked((user, error) => {
+            if (error) {
+                // do something to show the error
+                Alert.alert('#error @Login-componentDidMount ()', JSON.stringify(error, null, 2), [
+                    {text: 'OK', onPress: () => console.log('OK Pressed!')}
+                ])
+                this.setState({
+                    loaded: true
+                });
+            }
+            else{
+                if(user.ownAccessToken){
+                    Alert.alert('Logged in as:', JSON.stringify(user, null, 2), [
+                        {text: 'OK', onPress: () => console.log('OK Pressed!')}
+                    ])
+                    Actions.SideDrawer()
+                }
+                else{
+                     this.setState({
+                        loaded: true
+                    });
+                }
+            }
+        });
     };
 
     _registerUser() {
@@ -52,73 +75,36 @@ class Login extends Component {
     };
 
     _signInLocal() {
-        
-        user.loginLocal(this.state.inputEmail, this.state.inputPassword)
+        var aux;
+        userService.loginLocal(this.state.inputEmail, this.state.inputPassword)
             .then((responseRAW) => responseRAW.json())
             .then((response) => {
-                var fd = response;               
-                if(fd.status == 200){
-                    if(fd.user){
-                        
-                        if(AsyncStorage.getItem('storedUser')) {
-                            AsyncStorage.getItem('storedUser')  
-                                .then((value) => {
-                                    store = JSON.parse(value); //convierte el JSON en un objeto
-                                    Alert.alert('ya existia la clave', 'que hago entonces? \n'
-                                                + store.profile[0].isActive
-                                                + '\n'
-                                                + JSON.stringify(store, null, 2), [
-                                        {text: 'OK', onPress: () => console.log('OK Pressed!')}
-                                    ])
-                                })
-
-
-                        }else {
-                            AsyncStorage.setItem('storedUser', JSON.stringify(fd.user))
-                                .then(() => {
-                                    /*
-                                    Alert.alert('AsyncStorage stored OK', JSON.stringify(fd.user), [
-                                        {text: 'OK', onPress: () => console.log('OK Pressed!')}
-                                    ])
-                                    */
-                                })
-                                .then(() => {
-                                    Actions.SideDrawer()  
-                                })
-                                .catch((error) => {
-                                    Alert.alert('AsyncStorage error :(', JSON.stringify(error, null, 2), [
-                                        {text: 'OK', onPress: () => console.log('OK Pressed!')}
-                                    ])
-                                })
-
-                       }          
-                    }
-                    else{
-                        Alert.alert('Unexpected data received :(', JSON.stringify(fd, null, 2), [
-                            {text: 'OK', onPress: () => console.log('OK Pressed!')}
-                        ])
-                    }
+                var fd = response;
+                aux = response               
+                if(fd.status == 200 && fd.user){
+                    userStorage.addUser(fd.user, (error) => {
+                        if (error) {
+                            Alert.alert('sds', JSON.stringify(error, null, 2), [
+                                {text: 'OK', onPress: () => console.log('OK Pressed!')}
+                            ])
+                        }
+                        else{
+                            Actions.SideDrawer()
+                        }
+                    });
                 }
                 else{
-                    var errDescription = '';
-                    if(fd.err) {
-                        for (i = 0; i < Object.keys(fd.err).length; i++) { 
-                            errDescription =  errDescription + '\n' + fd.err[i].msg;
-                        }
-                    }
-                    Alert.alert('Oops! :( Something went wrong', fd.statusDescription + errDescription, [
-                        //{text: 'Cancel', onPress: () => console.log('Cancel Pressed!')},
+                    Alert.alert('Unexpected response @userService.loginLocal()', JSON.stringify(fd, null, 2), [
                         {text: 'OK', onPress: () => console.log('OK Pressed!')}
                     ])
                 }
             })
             .catch((error) => {  
                 var exfd = error;
-                Alert.alert('Unexpected Error', JSON.stringify(exfd, null, 2), [
+                Alert.alert('#error @userService.loginLocal()', JSON.stringify(error, null, 2) + '\n' + JSON.stringify(aux, null, 2), [
                     {text: 'OK', onPress: () => console.log('OK Pressed!')}
                 ])
             })
-        //
     };
 
     _signInFacebook() {
@@ -134,7 +120,16 @@ class Login extends Component {
     };
 
     render() {
-        return(
+        if(!this.state.loaded) {
+            return(<View  style={[{flexDirection: 'column',  flex:1, backgroundColor: settings.app.colors.corporate}]}></View>)
+        }
+        else{
+            return(this.renderView())
+        }
+    }
+
+    renderView() {
+            return(
                 <View  style={[styles.containerScene]}>
                     <NavBar title={settings.app.name} backButton={false} drawer={false}/>
                     <View style={[styles.containerMain]}>
@@ -226,9 +221,7 @@ class Login extends Component {
                     </ScrollView>
                     </View>
                 </View>
-
-        );
-        
+            );
     }
 // *********************
 }

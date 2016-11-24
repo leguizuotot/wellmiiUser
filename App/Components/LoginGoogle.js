@@ -8,7 +8,8 @@ import {
   ScrollView,
   TextInput,
   TouchableHighlight,
-  Alert
+  Alert,
+  AsyncStorage
 } from 'react-native';
 
 import NavBar from './Widgets/NavBar';
@@ -21,7 +22,8 @@ import CookieManager from 'react-native-cookies'; // para arreglar error rnpm li
 import URL from 'url-parse';
 
 
-import User from '../Services/user';
+import userService from '../Services/userService';
+import userStorage from '../Controllers/userStorage';
 
 
 var hostname = settings.app.hostname;
@@ -33,88 +35,68 @@ como detectar que al ruta no se encuentra
 como detectar que la ruta no es lo esperado
 */
 
-
 export default class LoginGoogle extends Component {
 
-constructor(props) {
-    super(props);
-    this.state = {
-        webview: 'connecting...',
-        cookieValue: '',
-        response: ''
-    };
-}
+    componentWillMount(){
+        CookieManager.clearAll((err, res) => {});
+    }
 
-onNavigationStateChange (navState) {
-    this.setState({
-        webview: 'loading...'
-    });
+    constructor(props) {
+        super(props);
+        this.state = {
+            webview: 'connecting...',
+            cookieValue: '',
+            response: ''
+        };
+    }
 
-    if (!navState.loading) {
-        var url = new URL(navState.url);
+    onNavigationStateChange (navState) {
         this.setState({
-            webview: url.hostname + '' + url.pathname
+            webview: 'loading...'
         });
-        if (url && url.hostname === hostname && url.pathname.indexOf(pathname + '/callback') !== -1) {
-            this.setState({
-                webview: url.hostname + '' + url.pathname + ' Success: ya estas en /callback'
-            });
-            CookieManager.get(hostname, (err, cookie) => {
-          
-                if (cookie && cookie.authGoogle) {
-                  
-                    User.loginGoogle('', cookie.authGoogle, hostname)
-                    .then((responseRAW) => responseRAW.json())
-                    // #####!!!!"""!$$$%· HAY QUE COMPROBAR QUE EL RESPONSE SEA 200!! SI NO DEBE AVISAR DEL ERROR Y VOLVER AL LOGIN PRINCIPAL
-                    .then((response) => {
-                       
-                        this.setState({
-                            cookieValue: cookie.authGoogle,
-                            webview: url.hostname + '' + url.pathname + ' Success: ya estas en /callback y la cookie esta!!! :) El fetch salió de rechupete.',
-                            response: response
-                        });
-                    })
-                    .then(() => {
-                        CookieManager.clearAll((err, res) => {});
-                    })
-                    .then(() => {
 
-                        Alert.alert('Fetched data', JSON.stringify(this.state.response, null, 2), [
-                            //{text: 'Cancel', onPress: () => console.log('Cancel Pressed!')},
-                            {text: 'OK', onPress: () => console.log('OK Pressed!')}
-                        ])
-                        Actions.SideDrawer();
-                    })
-                    .catch((error) => {
-                        // lo mismo, en caso de error si no consigue la cookie.... habra que avisar de q hay problemas y no se puede logar. el problema seria el back
-                        Alert.alert('unexpected error', JSON.stringify(this.state.response, null,2), [
-                            //{text: 'Cancel', onPress: () => console.log('Cancel Pressed!')},
-                            {text: 'OK', onPress: () => console.log('OK Pressed!')}
-                        ])
-                        this.setState({
-                            cookieValue: cookie.authGoogle,
-                            webview: url.hostname + '' + url.pathname + ' Success: ya estas en /callback y la cookie esta!!! :) Error en el fetch',
-                            response: JSON.stringify(error)
-                        });
-                    })
-                }
-                else{
-                    // si no genera la cookie habra que dar un error y volver a la pagina de login o algo asi. hace falta un componente error y un componente de login principal
-                    this.setState({
-                        webview: url.hostname + '' + url.pathname + ' Success: ya estas en /callback #error cookie authGoogle not found. #cookie: ' + JSON.stringify(cookie)
-                    });
-                }
+        if (!navState.loading) {
+            var url = new URL(navState.url);
+            this.setState({
+                webview: url.hostname + '' + url.pathname
             });
+            if (url && url.hostname === hostname && url.pathname.indexOf(pathname + '/callback') !== -1) {
+                this.setState({
+                    webview: url.hostname + '' + url.pathname
+                });
+                CookieManager.get(hostname, (err, cookie) => { 
+                    if (cookie && cookie.authGoogle) {
+                        userService.loginGoogle('', cookie.authGoogle, hostname)
+                        .then((responseRAW) => responseRAW.json())
+                        .then((response) => {
+                            var fd = response;
+                            this.setState({
+                                cookieValue: cookie.authGoogle,
+                                webview: url.hostname + '' + url.pathname,
+                                response: fd
+                            });
+                            Actions.Login();                                                                                  
+                        })
+                        .catch((error) => {
+                            // lo mismo, en caso de error si no consigue la cookie.... habra que avisar de q hay problemas y no se puede logar. el problema seria el back
+                            Alert.alert('#error @User.loginGoogle(, cookie.authGoogle, hostname)', JSON.stringify(error, null,2) + '\n' + JSON.stringify(fd, null,2), [
+                                //{text: 'Cancel', onPress: () => console.log('Cancel Pressed!')},
+                                {text: 'OK', onPress: () => console.log('OK Pressed!')}
+                            ])
+                            Actions.Login();
+                        })
+                    }
+                    else{
+                        // si no genera la cookie habra que dar un error y volver a la pagina de login o algo asi. hace falta un componente error y un componente de login principal
+                        this.setState({
+                            webview: url.hostname + '' + url.pathname + '\n' + '#error cookie authGoogle not found. #cookie: ' + JSON.stringify(cookie)
+                        });
+                    }
+                });
+            }
         }
     }
-    }
-        /*
-            <View style={[styles2.addressBarRow]}>
-                <Text>WebView: {this.state.webview}</Text>
-                <Text>cookieValue: {this.state.cookieValue}</Text>
-                <Text>response: {this.state.response}</Text>
-            </View>
-            */
+
     render() {
                     
         return (

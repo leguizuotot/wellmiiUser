@@ -19,7 +19,7 @@ import NavBar from './Widgets/NavBar';
 import settings from '../settings';
 import styles from '../styles';
 
-import user from '../Services/user';
+import userService from '../Services/userService';
 
 
 
@@ -36,7 +36,7 @@ class LoginNewUser extends Component {
 
     _registerUser() {
         
-        user.registerLocal(this.state.inputEmail, this.state.inputPassword, this.state.inputPasswordConfirmation)
+        userService.registerLocal(this.state.inputEmail, this.state.inputPassword, this.state.inputPasswordConfirmation)
             .then((responseRAW) => responseRAW.json())
             .then((response) => {
                 var fd = response;

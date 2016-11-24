@@ -19,11 +19,11 @@ import NavBar from './Widgets/NavBar';
 import settings from '../settings';
 import styles from '../styles';
 
-import userService from '../Services/userService';
+import user from '../Services/user';
 
 
 
-class LoginResetPassword extends Component {
+class AccountProfile extends Component {
 
     constructor(props) {
         super(props);
@@ -34,7 +34,7 @@ class LoginResetPassword extends Component {
 
     _sendEmail() {
         
-        userService.retreivePassword(this.state.inputEmail)
+        user.retreivePassword(this.state.inputEmail)
             .then((responseRAW) => responseRAW.json())
             .then((response) => {
                 var fd = response;
@@ -71,7 +71,7 @@ class LoginResetPassword extends Component {
     render() {
         return(
                 <View  style={[styles.containerScene]}>
-                    <NavBar title={settings.app.name} backButton={true} drawer={false}/>
+                    <NavBar title={settings.app.name} backButton={false} drawer={true}/>
                     <View style={[styles.containerMain]}>
                     <ScrollView style={[styles.containerDown, {flex:1, padding: 15}]}>                    
                         <View style={{height: 60}}></View>
@@ -86,7 +86,7 @@ class LoginResetPassword extends Component {
                                 </TextInput>
 
                             </View>
-                            <TouchableHighlight onPress={this._sendEmail.bind(this)}>
+                            <TouchableHighlight >
                                     <View style={[styles.containerRight, {margin: 7, backgroundColor: settings.app.colors.corporate, height: 40, flex: 1, alignItems: 'center', justifyContent: 'center'}]}>
 
                                                 <Text style={styles.buttonText}>Send email to retreive password</Text>
@@ -104,4 +104,4 @@ class LoginResetPassword extends Component {
     }
 // *********************
 }
-export default LoginResetPassword;
+export default AccountProfile;

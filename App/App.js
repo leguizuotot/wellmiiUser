@@ -22,6 +22,10 @@ import Login from './Components/Login';
 import LoginNewUser from './Components/LoginNewUser';
 import LoginResetPassword from './Components/LoginResetPassword';
 import LoginGoogle from './Components/LoginGoogle';
+
+import AccountPaymentMethods from './Components/AccountPaymentMethods';
+import AccountPaymentMethodsAdd from './Components/AccountPaymentMethodsAdd';
+
 import Home from './Components/Home';
 import Home2 from './Components/Home2';
 
@@ -41,13 +45,17 @@ class App extends Component {
                         <Scene key="LoginGoogle" component={LoginGoogle} title='LoginGoogle'/>
 
                 		<Scene key="SideDrawer" component={SideDrawer}>
-                            <Scene key="main" tabs >
-                            	<Scene key='Home' hideNavBar component={Home}  title='Home'/>
-    			  				<Scene key='Home2' hideNavBar component={Home2} title='Home2'/>
+                            <Scene key="main" tabs>
+                                <Scene key='Home' hideNavBar component={Home}  title='Home'/>
+                                
+                                <Scene key='AccountPaymentMethods' hideNavBar component={AccountPaymentMethods}  title='AccountPaymentMethods'/>
+                                <Scene key='AccountPaymentMethodsAdd' hideNavBar component={AccountPaymentMethodsAdd}  title='AccountPaymentMethodsAdd'/>
+
+                                <Scene key='Home2' hideNavBar component={Home2} title='Home2'/>
                             </Scene>
                 		</Scene>
-    				</Scene>
-                   
+
+    				</Scene>       
             
 			</Router>
 		);
@@ -55,6 +63,7 @@ class App extends Component {
 }
 
 export default App;
+
 /*
         <Router createReducer={reducerCreate} getSceneStyle={getSceneStyle}>
             <Scene key="modal" component={Modal} >
@@ -92,4 +101,4 @@ export default App;
                 <Scene key="error" component={Error} />
             </Scene>
         </Router>
-        */
+*/
