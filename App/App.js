@@ -22,7 +22,10 @@ import Login from './Components/Login';
 import LoginNewUser from './Components/LoginNewUser';
 import LoginResetPassword from './Components/LoginResetPassword';
 import LoginGoogle from './Components/LoginGoogle';
+import LoginTwitter from './Components/LoginTwitter';
+import LoginFacebook from './Components/LoginFacebook';
 
+import AccountProfile from './Components/AccountProfile';
 import AccountPaymentMethods from './Components/AccountPaymentMethods';
 import AccountPaymentMethodsAdd from './Components/AccountPaymentMethodsAdd';
 
@@ -43,11 +46,14 @@ class App extends Component {
     					<Scene key="LoginNewUser" component={LoginNewUser} title='LoginNewUser'/>
                         <Scene key="LoginResetPassword" component={LoginResetPassword} title='LoginResetPassword'/>
                         <Scene key="LoginGoogle" component={LoginGoogle} title='LoginGoogle'/>
+                        <Scene key="LoginTwitter" component={LoginTwitter} title='LoginTwitter'/>
+                        <Scene key="LoginFacebook" component={LoginFacebook} title='LoginFacebook'/>
 
                 		<Scene key="SideDrawer" component={SideDrawer}>
                             <Scene key="main" tabs>
                                 <Scene key='Home' hideNavBar component={Home}  title='Home'/>
                                 
+                                <Scene key='AccountProfile' hideNavBar component={AccountProfile}  title='AccountProfile'/>
                                 <Scene key='AccountPaymentMethods' hideNavBar component={AccountPaymentMethods}  title='AccountPaymentMethods'/>
                                 <Scene key='AccountPaymentMethodsAdd' hideNavBar component={AccountPaymentMethodsAdd}  title='AccountPaymentMethodsAdd'/>
 

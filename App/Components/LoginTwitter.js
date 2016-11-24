@@ -27,7 +27,7 @@ import userStorage from '../Controllers/userStorage';
 
 
 var hostname = settings.app.hostname;
-var pathname = settings.socialLogin.pathnameGoogle;
+var pathname = settings.socialLogin.pathnameTwitter;
 
 /* logros pendientes
 como detectar si la ruta esta caida
@@ -35,7 +35,7 @@ como detectar que al ruta no se encuentra
 como detectar que la ruta no es lo esperado
 */
 
-export default class LoginGoogle extends Component {
+export default class LoginTwitter extends Component {
 
     componentWillMount(){
         CookieManager.clearAll((err, res) => {});
@@ -50,15 +50,15 @@ export default class LoginGoogle extends Component {
         };
     };
 
-    _signInGoogle(string, authGoogle, hostname) {
-        userService.loginGoogle(string, authGoogle, hostname)
+    _signInTwitter(string, authTwitter, hostname) {
+        userService.loginTwitter(string, authTwitter, hostname)
         .then((responseRAW) => responseRAW.json())
         .then((response) => {
             var fd = response;
             if(fd.status == 200 && fd.user){
                 userStorage.addUser(fd.user, (error) => {
                     if (error) {
-                        Alert.alert('#error @LoginGoogle.js/userService.loginGoogle/userStorage.addUser', JSON.stringify(error, null, 2), [
+                        Alert.alert('#error @LoginTwitter.js/userService.loginTwitter/userStorage.addUser', JSON.stringify(error, null, 2), [
                             {text: 'OK', onPress: () => console.log('OK Pressed!')}
                         ])
                     }
@@ -88,7 +88,7 @@ export default class LoginGoogle extends Component {
         })
         .catch((error) => {
             // lo mismo, en caso de error si no consigue la cookie.... habra que avisar de q hay problemas y no se puede logar. el problema seria el back
-            Alert.alert('#error @LoginGoogle.js/_signInGoogle', JSON.stringify(error, null,2) + '\n' + JSON.stringify(fd, null,2), [
+            Alert.alert('#error @LoginTwitter.js/_signInTwitter', JSON.stringify(error, null,2) + '\n' + JSON.stringify(fd, null,2), [
                 //{text: 'Cancel', onPress: () => console.log('Cancel Pressed!')},
                 {text: 'OK', onPress: () => console.log('OK Pressed!')}
             ])
@@ -112,15 +112,15 @@ export default class LoginGoogle extends Component {
                     webview: url.hostname + '' + url.pathname
                 });
                 CookieManager.get(hostname, (err, cookie) => { 
-                    if (cookie && cookie.authGoogle) {
-                        this._signInGoogle('', cookie.authGoogle, hostname);
+                    if (cookie && cookie.authTwitter) {
+                        this._signInTwitter('', cookie.authTwitter, hostname);
                     }
                     else{
                         // si no genera la cookie habra que dar un error y volver a la pagina de login o algo asi. hace falta un componente error y un componente de login principal
                         this.setState({
-                            webview: url.hostname + '' + url.pathname + '\n' + '#error cookie authGoogle not found. #cookie: ' + JSON.stringify(cookie)
+                            webview: url.hostname + '' + url.pathname + '\n' + '#error cookie authTwitter not found. #cookie: ' + JSON.stringify(cookie)
                         });
-                        Alert.alert('#error @LoginGoogle.js/onNavigationStateChange', this.state.webview, [
+                        Alert.alert('#error @LoginTwitter.js/onNavigationStateChange', this.state.webview, [
                             //{text: 'Cancel', onPress: () => console.log('Cancel Pressed!')},
                             {text: 'OK', onPress: () => Actions.Login()}
                         ])

@@ -7,24 +7,49 @@ import {
   WebView,
   ScrollView,
   TextInput,
-  TouchableHighlight
+  TouchableHighlight,
+  AsyncStorage,
+  Alert
 } from 'react-native';
 
-import settings from '../settings'
-import styles from '../styles'
-import NavBar from './Widgets/NavBar'
-
 import {Router, Scene, Actions, Schema} from 'react-native-router-flux';
+
+import settings from '../settings';
+import styles from '../styles';
+import NavBar from './Widgets/NavBar';
+
+import userService from '../Services/userService';
+import userStorage from '../Controllers/userStorage';
 
 const contextTypes = {
   drawer: PropTypes.object,
 };
 
 class Home2 extends Component {
+ 
     constructor(props) {
         super(props);
         this.state = {
+          user: null
         };
+    }
+    
+    componentWillMount () { 
+    }
+
+    componentDidMount () {
+        userStorage.readUser((user, error) => {
+            if(error) {
+                Alert.alert('#error @Home/componentDidMount()/userStorage.readUser', JSON.stringify(error, null, 2), [
+                    {text: 'OK', onPress: () => console.log('OK Pressed!')}
+                ])
+            }
+            else{
+                this.setState({
+                    user: user
+                });
+            }
+        })
     }
 
     render(){

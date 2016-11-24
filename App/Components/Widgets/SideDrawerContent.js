@@ -27,16 +27,12 @@ const SideDrawerContent = (props, context) => {
     const logOut = () => {
         userStorage.removeUser((error) => {
             if (error) {
-                // do something to show the error
-                Alert.alert('#error @SideDrawerContent+logout', JSON.stringify(error, null, 2), [
+                Alert.alert('#error @SideDrawerContent/logout()/userStorage.removeUser', JSON.stringify(error, null, 2), [
                     {text: 'OK', onPress: () => console.log('OK Pressed!')}
                 ])
                 Actions.Login()
             }
             else{
-                Alert.alert('Success', 'You\'ve unlogged succesfully.', [
-                    {text: 'OK', onPress: () => console.log('OK Pressed!')}
-                ])
                 Actions.Login()   
             }
         });
@@ -79,7 +75,7 @@ const SideDrawerContent = (props, context) => {
                             <Text style={{fontWeight: 'bold'}}>Account</Text>
                         </View>
                         
-                        <TouchableHighlight  onPress={() => { drawer.close(); Actions.Home2(); }}>
+                        <TouchableHighlight  onPress={() => { drawer.close(); Actions.AccountProfile(); }}>
                             <View style={[styles.containerRight, {height:40, alignItems: 'center', backgroundColor:'#FFFFFF'}]}>
                                 <View style={{height: 40, width: 40, alignItems: 'center', justifyContent: 'center'}}>
                                     <Image

@@ -41,9 +41,9 @@ class Login extends Component {
 
     componentDidMount () {
         userStorage.getUserChecked((user, error) => {
-            if (error) {
+            if(error) {
                 // do something to show the error
-                Alert.alert('#error @Login-componentDidMount ()', JSON.stringify(error, null, 2), [
+                Alert.alert('#error @Login-componentDidMount()-getUserChecked', JSON.stringify(error, null, 2), [
                     {text: 'OK', onPress: () => console.log('OK Pressed!')}
                 ])
                 this.setState({
@@ -51,19 +51,25 @@ class Login extends Component {
                 });
             }
             else{
-                if(user.ownAccessToken){
-                    Alert.alert('Logged in as:', JSON.stringify(user, null, 2), [
-                        {text: 'OK', onPress: () => console.log('OK Pressed!')}
-                    ])
+                if(user.ownAccessToken) {
                     Actions.SideDrawer()
                 }
-                else{
-                     this.setState({
-                        loaded: true
-                    });
+                else{ // load loging and delete user just in case the token wasn't up to date
+                    userStorage.removeUser((error) => {
+                        if(error){
+                            Alert.alert('#error @Login.js/componentDidMount()/removeUser', JSON.stringify(error, null, 2), [
+                                {text: 'OK', onPress: () => console.log('OK Pressed!')}
+                            ])
+                        }
+                        else{
+                            this.setState({
+                                loaded: true
+                            });
+                        }
+                    })
                 }
             }
-        });
+        })
     };
 
     _registerUser() {
@@ -75,16 +81,14 @@ class Login extends Component {
     };
 
     _signInLocal() {
-        var aux;
         userService.loginLocal(this.state.inputEmail, this.state.inputPassword)
             .then((responseRAW) => responseRAW.json())
             .then((response) => {
-                var fd = response;
-                aux = response               
+                var fd = response;            
                 if(fd.status == 200 && fd.user){
                     userStorage.addUser(fd.user, (error) => {
                         if (error) {
-                            Alert.alert('sds', JSON.stringify(error, null, 2), [
+                            Alert.alert('#error @Login.js/_signInLocal/userStorage.addUser', JSON.stringify(error, null, 2), [
                                 {text: 'OK', onPress: () => console.log('OK Pressed!')}
                             ])
                         }
@@ -94,9 +98,22 @@ class Login extends Component {
                     });
                 }
                 else{
-                    Alert.alert('Unexpected response @userService.loginLocal()', JSON.stringify(fd, null, 2), [
-                        {text: 'OK', onPress: () => console.log('OK Pressed!')}
-                    ])
+                    var errDescription = '';
+                    if(fd.err) {
+                        for (i = 0; i < Object.keys(fd.err).length; i++) { 
+                            errDescription =  errDescription + '\n' + fd.err[i].msg;
+                            if(i == Object.keys(fd.err).length-1){
+                                Alert.alert(fd.status + ' ' + fd.statusDescription, errDescription, [
+                                    {text: 'OK', onPress: () => console.log('OK Pressed!')}
+                                ])
+                            }
+                        }
+                    }
+                    else{
+                         Alert.alert(fd.status + ' ' + fd.statusDescription, JSON.stringify(fd, null, 2), [
+                            {text: 'OK', onPress: () => console.log('OK Pressed!')}
+                        ])      
+                    }
                 }
             })
             .catch((error) => {  
@@ -108,7 +125,7 @@ class Login extends Component {
     };
 
     _signInFacebook() {
-        Actions.SideDrawer();
+        Actions.LoginFacebook();
     };
 
     _signInGoogle() {
@@ -116,7 +133,7 @@ class Login extends Component {
     }; 
 
     _signInTwitter() {
-        Actions.SideDrawer();
+        Actions.LoginTwitter();
     };
 
     render() {
