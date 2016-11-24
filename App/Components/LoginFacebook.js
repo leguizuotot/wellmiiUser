@@ -50,8 +50,8 @@ export default class LoginFacebook extends Component {
         };
     };
 
-    _signInFacebook(string, authFacebook, hostname) {
-        userService.loginFacebook(string, authFacebook, hostname)
+    _signInFacebook(ownAccessToken, authFacebook) {
+        userService.loginFacebook(ownAccessToken, authFacebook)
         .then((responseRAW) => responseRAW.json())
         .then((response) => {
             var fd = response;
@@ -113,7 +113,7 @@ export default class LoginFacebook extends Component {
                 });
                 CookieManager.get(hostname, (err, cookie) => { 
                     if (cookie && cookie.authFacebook) {
-                        this._signInFacebook('', cookie.authFacebook, hostname);
+                        this._signInFacebook('', cookie.authFacebook);
                     }
                     else{
                         // si no genera la cookie habra que dar un error y volver a la pagina de login o algo asi. hace falta un componente error y un componente de login principal

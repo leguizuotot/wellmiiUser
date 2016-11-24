@@ -85,7 +85,7 @@ module.exports.removeUser = function (callback) {
         if (error) {
                callback({description: '#error @dataStored.removeKey(key)', error: error});
         }
-        else{ 
+        else{
             callback(false);
         }
     })

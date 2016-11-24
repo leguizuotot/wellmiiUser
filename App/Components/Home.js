@@ -61,7 +61,7 @@ class Home extends Component {
         return (
             <View  style={[styles.containerScene]}>
                 <NavBar title={settings.app.name} backButton={false} drawer={true}/>
-                <View style={[styles.containerMain]}>
+                <ScrollView style={[styles.containerMain]}>
                     <View style={[styles.containerDown, {flex:1}]}>
                         <Text> Estas en Home ONE!!!!!!</Text>
                         <TouchableHighlight onPress={gotoHome1}>
@@ -72,7 +72,7 @@ class Home extends Component {
                         </TouchableHighlight>
                         <Text>{JSON.stringify(this.state.user,null,2)}</Text>
                     </View>  
-                </View>
+                </ScrollView>
             </View>
         );
     }

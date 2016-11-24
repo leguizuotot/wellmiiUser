@@ -22,6 +22,7 @@ import Login from './Components/Login';
 import LoginNewUser from './Components/LoginNewUser';
 import LoginResetPassword from './Components/LoginResetPassword';
 import LoginGoogle from './Components/LoginGoogle';
+import LinkGoogle from './Components/LinkGoogle';
 import LoginTwitter from './Components/LoginTwitter';
 import LoginFacebook from './Components/LoginFacebook';
 
@@ -54,6 +55,9 @@ class App extends Component {
                                 <Scene key='Home' hideNavBar component={Home}  title='Home'/>
                                 
                                 <Scene key='AccountProfile' hideNavBar component={AccountProfile}  title='AccountProfile'/>
+                                <Scene key="LinkFacebook" hideNavBar component={LoginFacebook} title='LinkFacebook'/>
+                                <Scene key="LinkGoogle" hideNavBar component={LinkGoogle} title='LinkGoogle'/>
+                                <Scene key="LinkTwitter" hideNavBar component={LoginTwitter} title='LinkTwitter'/>
                                 <Scene key='AccountPaymentMethods' hideNavBar component={AccountPaymentMethods}  title='AccountPaymentMethods'/>
                                 <Scene key='AccountPaymentMethodsAdd' hideNavBar component={AccountPaymentMethodsAdd}  title='AccountPaymentMethodsAdd'/>
 

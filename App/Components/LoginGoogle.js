@@ -37,21 +37,28 @@ como detectar que la ruta no es lo esperado
 
 export default class LoginGoogle extends Component {
 
-    componentWillMount(){
-        CookieManager.clearAll((err, res) => {});
-    }
-
     constructor(props) {
         super(props);
         this.state = {
             webview: 'connecting...',
             cookieValue: '',
-            response: ''
+            response: '',
+            user: null,
+            needBackButton: this.props.needBackButton,
+            needDrawer: this.props.needDrawer
         };
     };
 
-    _signInGoogle(string, authGoogle, hostname) {
-        userService.loginGoogle(string, authGoogle, hostname)
+    componentWillMount(){
+        CookieManager.clearAll((err, res) => {});
+    }
+
+    componentDidMount () {
+
+    }
+
+    _signInGoogle(ownAccessToken, authGoogle) {
+        userService.loginGoogle(ownAccessToken, authGoogle)
         .then((responseRAW) => responseRAW.json())
         .then((response) => {
             var fd = response;
@@ -113,7 +120,7 @@ export default class LoginGoogle extends Component {
                 });
                 CookieManager.get(hostname, (err, cookie) => { 
                     if (cookie && cookie.authGoogle) {
-                        this._signInGoogle('', cookie.authGoogle, hostname);
+                        this._signInGoogle('', cookie.authGoogle);
                     }
                     else{
                         // si no genera la cookie habra que dar un error y volver a la pagina de login o algo asi. hace falta un componente error y un componente de login principal
@@ -131,7 +138,7 @@ export default class LoginGoogle extends Component {
     }
 
     render() {
-                    
+            
         return (
             <View  style={[styles.containerScene]}>
                 <NavBar title={settings.app.name} backButton={true} drawer={false}/>

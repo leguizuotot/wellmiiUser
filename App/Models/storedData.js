@@ -22,7 +22,7 @@ module.exports.addKey = function (key, data, callback) {
         callback(false);
     })
     .catch((error) => {
-        callback({catch: error, key:key});
+        callback({catch: error, key:key, data: data});
     })
 }
 
